@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-color: #F3F4F6;
+
+  --sidebar-bg: #EDEFF2;
+  --card-bg: rgba(255, 255, 255, 0.7); /* subtle glass */
+  --card-hover: rgba(255, 255, 255, 0.9);
+  --main-panel: transparent;
+
+  --accent-primary: #1F2937;
+  --accent-hover: #020617; /* slightly richer black */
+  --accent-subtle: rgba(0, 0, 0, 0.035);
+
+  --text-main: #111827; /* deeper, more modern */
+  --text-dim: #374151;
+  --text-muted: #6B7280;
+
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-hover: rgba(0, 0, 0, 0.12);
+
+  --shadow-lux: 0 2px 10px rgba(0, 0, 0, 0.04);
+  --shadow-lux-hover: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* ══ Base ══════════════════════════════════════════════════════════ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  background: linear-gradient(135deg, var(--bg-color) 0%, var(--bg-gradient-end) 100%);
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* ══ Background Animation ═══════════════════════════════════════════ */
+.lux-bg-glow {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(circle at 50% 0%, rgba(0, 0, 0, 0.015) 0%, transparent 60%);
+  animation: pulse-glow 12s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pulse-glow {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0.9;
+    transform: scale(1.04);
+  }
+}
+
+/* ══ Cards & Panels ═════════════════════════════════════════════════ */
+.lux-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--shadow-lux);
+  backdrop-filter: blur(10px); /* modern glass */
+  -webkit-backdrop-filter: blur(10px);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lux-card:hover {
+  background: var(--card-hover);
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-lux-hover);
+  transform: translateY(-2px);
+}
+
+/* ══ Interactive Elements ═══════════════════════════════════════════ */
+.lux-input {
+  background: transparent;
+  color: var(--text-main);
+  transition: all 0.2s ease;
+}
+
+.lux-input::placeholder {
+  color: var(--text-muted);
+}
+
+.lux-input:focus {
+  outline: none;
+}
+
+.lux-btn {
+  background: rgba(0, 0, 0, 0.025);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.2s ease;
+}
+
+.lux-btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.lux-btn-primary {
+  background: var(--text-main);
+  color: #FFFFFF;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.lux-btn-primary:hover {
+  background: var(--accent-hover);
+  transform: scale(1.02);
+}
+
+/* ══ Scrollbar ══════════════════════════════════════════════════════ */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.custom-scrollbar:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* ══ Animations ═════════════════════════════════════════════════════ */
+.fade-in-up {
+  opacity: 0;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stagger-1 {
+  animation-delay: 0.08s;
+}
+
+.stagger-2 {
+  animation-delay: 0.16s;
+}
+
+.stagger-3 {
+  animation-delay: 0.24s;
+}

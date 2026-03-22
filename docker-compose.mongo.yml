@@ -1,0 +1,64 @@
+# docker-compose.mongo.yml
+#
+# Local MongoDB Sharded Cluster
+#
+# Architecture:
+#   - 1 config server replica set (configsvr)
+#   - 2 shard replica sets (shard1, shard2)
+#   - 1 mongos router (port 27017)
+#
+# Usage:
+#   
+#   bash scripts/init_sharding.sh
+#   python -m db.mongo_setup
+#
+# Connect: mongodb://localhost:27017/chat_database
+
+services:
+
+  # ── Config Server ─────────────────────────────────────────────
+  configsvr:
+    image: mongo:7
+    container_name: mongo-configsvr
+    command: mongod --configsvr --replSet configRS --port 27019 --bind_ip_all
+    ports:
+      - "27019:27019"
+    volumes:
+      - configsvr_data:/data/db
+
+  # ── Shard 1 ───────────────────────────────────────────────────
+  shard1:
+    image: mongo:7
+    container_name: mongo-shard1
+    command: mongod --shardsvr --replSet shard1RS --port 27018 --bind_ip_all
+    ports:
+      - "27018:27018"
+    volumes:
+      - shard1_data:/data/db
+
+  # ── Shard 2 ───────────────────────────────────────────────────
+  shard2:
+    image: mongo:7
+    container_name: mongo-shard2
+    command: mongod --shardsvr --replSet shard2RS --port 27020 --bind_ip_all
+    ports:
+      - "27020:27020"
+    volumes:
+      - shard2_data:/data/db
+
+  # ── Mongos Router ─────────────────────────────────────────────
+  mongos:
+    image: mongo:7
+    container_name: mongo-router
+    command: mongos --configdb configRS/configsvr:27019 --port 27017 --bind_ip_all
+    ports:
+      - "27017:27017"
+    depends_on:
+      - configsvr
+      - shard1
+      - shard2
+
+volumes:
+  configsvr_data:
+  shard1_data:
+  shard2_data:
