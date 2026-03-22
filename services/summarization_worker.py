@@ -61,21 +61,43 @@ async def _generate_chunk_summary(messages: list) -> str:
     """
     convo_text = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
     prompt = [
-        {
-            "role": "system",
-            "content": (
-                "You are a summarization assistant. Produce a concise, standalone summary "
-                "of the conversation segment below. Preserve key facts, decisions, and "
-                "named entities. Do NOT reference 'previous summaries'. Maximum 300 words.\n\n"
-                "Format your output exactly as follows:\n"
-                "SUMMARY:\n[Your summary here]\n\n"
-                "ENTITIES:\n- [Entity 1]\n- [Entity 2]"
-            ),
-        },
-        {
-            "role": "user",
-            "content": f"Conversation segment to summarize:\n{convo_text}",
-        },
+    {
+        "role": "system",
+        "content": (
+            "You are a memory compression system for a conversational AI.\n\n"
+
+            "Your task is to convert a conversation segment into a dense, structured summary "
+            "that preserves the conversation's state and continuity.\n\n"
+
+            "Your summary MUST capture:\n"
+            "1. Core topic(s) of discussion\n"
+            "2. Key decisions, conclusions, or solutions reached\n"
+            "3. Important context influencing the discussion\n"
+            "4. Any unresolved questions or ongoing threads\n"
+            "5. The current state or progress of the conversation\n\n"
+
+            "IMPORTANT RULES:\n"
+            "- Do NOT write a message-by-message recap\n"
+            "- Do NOT use phrases like 'user said' or 'assistant replied'\n"
+            "- Be concise but information-dense\n"
+            "- Preserve technical details and constraints\n"
+            "- Ensure the summary can stand alone and still make sense later\n\n"
+
+            "Maximum 250 words.\n\n"
+
+            "Format your output EXACTLY as:\n\n"
+
+            "TOPIC:\n[Main topic]\n\n"
+            "KEY POINTS:\n- [Decision / conclusion]\n- [Decision / conclusion]\n\n"
+            "CONTEXT:\n- [Important background or constraints]\n\n"
+            "OPEN THREADS:\n- [Unresolved question or ongoing issue]\n\n"
+            "STATE:\n[Current progress or direction of the conversation]"
+        ),
+    },
+    {
+        "role": "user",
+        "content": f"Conversation segment to summarize:\n{convo_text}",
+    },
     ]
     result = await call_llm_async(prompt, temperature=0.3)
     return result.get("content", "").strip()
