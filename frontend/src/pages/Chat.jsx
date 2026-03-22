@@ -184,24 +184,11 @@ const Chat = () => {
         setLoading(true);
 
         try {
-            // 1. If no chat selected or temporary, create one
+            // 1. If no chat selected or temporary, set to null for backend auto-creation
+            let isNewChat = false;
             if (!currentChatId || String(currentChatId).startsWith('temp-')) {
-                const created = await api.createChat(userId, 'New Chat', token);
-                if (created.status === 'ok') {
-                    currentChatId = created.chat_id;
-                    setChatId(currentChatId);
-                    // Refresh chat list to replace optimistic entry
-                    try {
-                        const updated = await api.listChats(token, 10, 0);
-                        if (updated.status === 'ok') setChats(updated.chats || []);
-                    } catch (e) { }
-                } else {
-                    // Fail: remove optimistic chat and abort
-                    setChats(prev => prev.filter(c => !String(c.chat_id).startsWith('temp-')));
-                    setChatId(null);
-                    setLoading(false);
-                    return;
-                }
+                currentChatId = null;
+                isNewChat = true;
             }
 
             // 2. Optimistically add user message (no ID yet)
@@ -219,6 +206,11 @@ const Chat = () => {
             // 3. Send message to backend
             const res = await api.sendMessage(userId, currentChatId, text, token, selectedPersona, attachments);
             if (res.status === 'ok') {
+                if (isNewChat && res.chat_id) {
+                    currentChatId = res.chat_id;
+                    setChatId(currentChatId);
+                }
+
                 const assistantMsg = {
                     id: res.message_id,
                     role: 'assistant',
@@ -242,9 +234,18 @@ const Chat = () => {
                     const updated = await api.listChats(token, 10, 0);
                     if (updated.status === 'ok') setChats(updated.chats || []);
                 } catch (e) { }
+            } else {
+                if (isNewChat) {
+                    setChats(prev => prev.filter(c => !String(c.chat_id).startsWith('temp-')));
+                    setChatId(null);
+                }
             }
         } catch (err) {
             console.error("Failed to send message", err);
+            if (isNewChat) {
+                setChats(prev => prev.filter(c => !String(c.chat_id).startsWith('temp-')));
+                setChatId(null);
+            }
         } finally {
             setLoading(false);
         }

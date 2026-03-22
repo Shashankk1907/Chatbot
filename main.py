@@ -454,6 +454,7 @@ async def chat_endpoint(
         code = result.get("code", 500)
         return JSONResponse(status_code=code, content=result)
 
+    result["chat_id"] = chat_id
     return result
 
 

@@ -38,7 +38,7 @@ export const api = {
         if (attachments && attachments.length > 0) {
             const form = new FormData();
             form.append('user_id', userId);
-            form.append('chat_id', chatId);
+            if (chatId) form.append('chat_id', chatId);
             form.append('message_text', messageText);
             form.append('persona', persona);
             attachments.forEach((file) => form.append('attachments', file));
@@ -53,7 +53,7 @@ export const api = {
             });
             return response.json();
         }
-        return this.post('/chat', { chat_id: chatId, message_text: messageText, persona }, token);
+        return this.post('/chat', { chat_id: chatId || null, message_text: messageText, persona }, token);
     },
 
     async getMessages(chatId, token) {
